@@ -60,19 +60,33 @@ const frontendRoot = path.join(__dirname, '..', 'frontend');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 30 * 60 * 1000,
-      httpOnly: true,
-      secure: process.env.RENDER === 'true' || process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
-    }
-  })
-);
+const sessionOpts = {
+  secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
+  resave: false,
+  saveUninitialized: false,
+  proxy: process.env.RENDER === 'true' || process.env.NODE_ENV === 'production',
+  cookie: {
+    maxAge: 30 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.RENDER === 'true' || process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  }
+};
+
+/** Postgres session store: survives Render restarts and works if more than one instance runs (MemoryStore does not). */
+if (process.env.DATABASE_URL) {
+  const pgSession = require('connect-pg-simple')(session);
+  sessionOpts.store = new pgSession({
+    pool,
+    createTableIfMissing: true
+  });
+} else {
+  console.warn(
+    '[session] DATABASE_URL not set — using MemoryStore (unsuitable for production / multiple instances).'
+  );
+}
+
+app.use(session(sessionOpts));
 
 app.get('/api/health', async (req, res) => {
   try {

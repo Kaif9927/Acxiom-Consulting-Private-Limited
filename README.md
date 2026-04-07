@@ -3,6 +3,8 @@ https://acxiom-consulting-private-limited-1.onrender.com/
 
 # Event Management System
 
+**Live app (Render):** [https://acxiom-consulting-private-limited-1.onrender.com/](https://acxiom-consulting-private-limited-1.onrender.com/)
+
 Express + **PostgreSQL** with **session auth**: memberships, events, bookings, and a **marketplace** (**admin**, **vendor**, **user**)—vendors, products, cart, checkout, orders, guest list, maintenance.
 
 ## Project structure
@@ -32,11 +34,11 @@ psql "$DATABASE_URL" -f database/init_pg.sql
 
 (Install PostgreSQL client tools, or use Render’s **Shell** on the Postgres instance with the file checked in.)
 
-The app uses **`pg`** and **`DATABASE_URL`** only for connections (no `DB_HOST` / `DB_PORT` for Postgres).
+The app uses **`pg`** and **`DATABASE_URL`** only for connections (no `DB_HOST` / `DB_PORT` for Postgres). Sessions are stored in Postgres (**`session`** table, created automatically by `connect-pg-simple`) so logins survive restarts and load-balanced instances on Render.
 
 ### Other env
 
-- **`ALLOWED_ORIGINS`** — optional comma-separated origins for CORS with credentials (e.g. `https://your-app.onrender.com`).
+- **`ALLOWED_ORIGINS`** — optional comma-separated origins for CORS with credentials (production: `https://acxiom-consulting-private-limited-1.onrender.com`).
 
 See `backend/.env.example`.
 
@@ -60,7 +62,7 @@ Open `http://localhost:3000`.
 |------|--------|
 | `DATABASE_URL` | **External Database URL** from the Postgres dashboard (include `?sslmode=require` if offered; the app also enables TLS for `*.render.com` URLs). |
 | `SESSION_SECRET` | Long random string |
-| `ALLOWED_ORIGINS` | Your Web Service URL, e.g. `https://your-service.onrender.com` |
+| `ALLOWED_ORIGINS` | Web Service origin, e.g. `https://acxiom-consulting-private-limited-1.onrender.com` |
 
 Run **`database/init_pg.sql`** once against that database (see [Database setup](#database-setup)). Remove old **`DB_*`** / SkySQL variables if you were using MariaDB before.
 
