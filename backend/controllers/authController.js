@@ -38,6 +38,12 @@ async function login(req, res) {
     req.session.role = row.role;
     req.session.email = row.email || null;
 
+    // Ensure store (e.g. connect-pg-simple) finishes persisting before the client
+    // navigates; otherwise the next GET /api/session can run before the row exists.
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => (err ? reject(err) : resolve()));
+    });
+
     return res.json({
       ok: true,
       user: { id: row.id, username: row.username, email: row.email, role: row.role }
@@ -101,7 +107,7 @@ async function register(req, res) {
 
 function logout(req, res) {
   req.session.destroy(() => {
-    res.clearCookie('connect.sid');
+    res.clearCookie('connect.sid', { path: '/' });
     res.json({ ok: true });
   });
 }

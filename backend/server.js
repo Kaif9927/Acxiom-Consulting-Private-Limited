@@ -66,6 +66,7 @@ const sessionOpts = {
   saveUninitialized: false,
   proxy: process.env.RENDER === 'true' || process.env.NODE_ENV === 'production',
   cookie: {
+    path: '/',
     maxAge: 30 * 60 * 1000,
     httpOnly: true,
     secure: process.env.RENDER === 'true' || process.env.NODE_ENV === 'production',
