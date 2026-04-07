@@ -32,6 +32,7 @@
         <div class="err" id="err"></div>
       </div>
     </div>
+    <script src="/js/common.js"></script>
     <script>
       document.getElementById("go").onclick = function () {
         var err = document.getElementById("err");
@@ -52,11 +53,14 @@
             });
           })
           .then(function (x) {
-            if (!x.r.ok) {
-              err.textContent = x.d.message || "Failed";
+            if (!apiJsonOk(x.r, x.d)) {
+              err.textContent = (x.d && x.d.message) || "Failed";
               return;
             }
             window.location.href = "/dashboard.html";
+          })
+          .catch(function () {
+            err.textContent = "Network error or invalid response.";
           });
       };
     </script>

@@ -1,3 +1,11 @@
+/**
+ * Login/register JSON responses must include ok: true. Do not redirect on HTTP 200 alone
+ * (misconfigured proxies or bugs could otherwise send users through as "logged in").
+ */
+function apiJsonOk(res, data) {
+  return !!(res && res.ok && data && data.ok === true);
+}
+
 async function getSession() {
   const res = await fetch('/api/session', { credentials: 'include' });
   const data = await res.json().catch(() => ({}));

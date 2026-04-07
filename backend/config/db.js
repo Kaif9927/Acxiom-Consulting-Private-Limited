@@ -32,8 +32,10 @@ function wrapMysqlStyleResult(result) {
 
 const connectionString = getDatabaseUrl();
 const useSsl =
-  connectionString &&
-  (connectionString.includes('render.com') || process.env.DATABASE_SSL === '1');
+  Boolean(connectionString) &&
+  (connectionString.includes('render.com') ||
+    process.env.DATABASE_SSL === '1' ||
+    /[?&]sslmode=require/i.test(connectionString));
 
 const pool = new Pool({
   connectionString: connectionString || undefined,

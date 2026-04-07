@@ -101,6 +101,7 @@
       </div>
     </footer>
 
+    <script src="/js/common.js"></script>
     <script>
       (function () {
         const err = document.getElementById("loginErr");
@@ -144,8 +145,9 @@
                   "). Open this site from your Node Web Service URL (not a Static Site), or check /api/health.";
                 return;
               }
-              if (!x.r.ok) {
-                err.textContent = (x.data && x.data.message) || "Login failed (" + x.r.status + ").";
+              if (!apiJsonOk(x.r, x.data)) {
+                err.textContent =
+                  (x.data && x.data.message) || "Login failed (" + x.r.status + ").";
                 return;
               }
               window.location.href = "/dashboard.html";

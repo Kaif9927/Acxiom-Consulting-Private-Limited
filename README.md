@@ -1,6 +1,3 @@
-# deployed link
-https://acxiom-consulting-private-limited-1.onrender.com/
-
 # Event Management System
 
 **Live app (Render):** [https://acxiom-consulting-private-limited-1.onrender.com/](https://acxiom-consulting-private-limited-1.onrender.com/)
@@ -24,9 +21,13 @@ Express + **PostgreSQL** with **session auth**: memberships, events, bookings, a
 
 ### PostgreSQL (Render or local)
 
-1. Create a Postgres database (e.g. **Render Postgres** → copy **External Database URL**).
-2. Set **`DATABASE_URL`** on the Web Service (and in local `backend/.env`). If you only have **`DB_URL`** in Render, that works too—the app reads **`DATABASE_URL` or `DB_URL`**. See `backend/.env.example`.
-3. Apply schema + seed **once**:
+1. Create a Postgres database (e.g. **Render Postgres**).
+2. On your **Render Web Service** (Node), set **`DATABASE_URL` or `DB_URL`** to the connection string:
+   - **Internal Database URL** (from the Postgres **Info** tab) is best when the Web Service and DB are both on Render (private network).
+   - **External Database URL** (host ends in `*.render.com`) is for connecting from your laptop or when internal URL is unavailable; TLS is used automatically.
+   - Paste the URL **exactly** as Render shows it—no spaces or line breaks inside the string.
+   - For local development, use the same variables in `backend/.env` (see `backend/.env.example`).
+4. Apply schema + seed **once**:
 
 ```bash
 psql "$DATABASE_URL" -f database/init_pg.sql
@@ -34,7 +35,7 @@ psql "$DATABASE_URL" -f database/init_pg.sql
 
 (Install PostgreSQL client tools, or use Render’s **Shell** on the Postgres instance with the file checked in.)
 
-The app uses **`pg`** and **`DATABASE_URL`** only for connections (no `DB_HOST` / `DB_PORT` for Postgres). Sessions are stored in Postgres (**`session`** table, created automatically by `connect-pg-simple`) so logins survive restarts and load-balanced instances on Render.
+The app uses **`pg`** with **`DATABASE_URL` or `DB_URL`** (no separate `DB_HOST` / `DB_PORT`). Sessions are stored in Postgres (**`session`** table, created automatically by `connect-pg-simple`) so logins survive restarts and load-balanced instances on Render. If logins behave strangely, confirm **`GET /api/health`** reports DB connected and run **`database/init_pg.sql`** so seeded users have bcrypt `password` hashes.
 
 ### Other env
 
@@ -60,7 +61,7 @@ Open `http://localhost:3000`.
 
 | Name | Value |
 |------|--------|
-| `DATABASE_URL` | **External Database URL** from the Postgres dashboard (include `?sslmode=require` if offered; the app also enables TLS for `*.render.com` URLs). |
+| `DATABASE_URL` or `DB_URL` | **Internal** URL (Web + DB on Render) or **External** URL (from laptop / TLS). TLS is enabled for `*.render.com` URLs and when the URL contains `sslmode=require`. |
 | `SESSION_SECRET` | Long random string |
 | `ALLOWED_ORIGINS` | Web Service origin, e.g. `https://acxiom-consulting-private-limited-1.onrender.com` |
 

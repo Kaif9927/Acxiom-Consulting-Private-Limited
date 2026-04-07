@@ -21,7 +21,20 @@ async function login(req, res) {
     }
 
     const row = rows[0];
-    const match = await bcrypt.compare(password, row.password);
+    const stored = row.password;
+    if (
+      !stored ||
+      typeof stored !== 'string' ||
+      stored.length < 20 ||
+      !stored.startsWith('$2')
+    ) {
+      console.error('login: invalid or missing password hash for user id %s', row.id);
+      return res.status(500).json({
+        ok: false,
+        message: 'Account data is invalid. Reset the user password or re-run database seed.'
+      });
+    }
+    const match = await bcrypt.compare(password, stored);
     if (!match) {
       return res.status(401).json({ ok: false, message: 'Bad username or password.' });
     }
