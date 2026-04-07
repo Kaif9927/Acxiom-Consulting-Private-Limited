@@ -461,6 +461,67 @@ td.table-empty {
   font-size: 0.95rem;
 }
 
+/* Home sign-in: vertical center + narrow column */
+body.login-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.login-body .login-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: none;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.login-body .login-stack {
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-body .login-stack .card {
+  width: 100%;
+  max-width: none;
+  margin-bottom: 0;
+}
+
+.login-body .login-stack input[type="text"],
+.login-body .login-stack input[type="password"],
+.login-body .login-stack input[type="email"] {
+  max-width: none;
+}
+
+.login-body .login-hero {
+  text-align: center;
+  border-left: none;
+  padding-left: 0;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.login-body .login-stack > .login-demo-hint {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.login-signup-prompt {
+  text-align: center;
+  margin: 18px 0 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.login-signup-prompt a {
+  font-weight: 600;
+}
+
 .login-actions {
   margin-top: 18px;
 }
@@ -473,6 +534,10 @@ td.table-empty {
 .flow-wrap {
   max-width: 800px;
   margin: 0 auto;
+}
+
+.flow-wrap.flow-wrap--wide {
+  max-width: 1180px;
 }
 
 .flow-box {
@@ -542,6 +607,46 @@ td.table-empty {
 
 .login-demo-table code {
   font-size: 0.95em;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin-top: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.maintenance-acct-table {
+  min-width: 880px;
+}
+
+.maintenance-acct-table input[type="text"],
+.maintenance-acct-table input[type="password"] {
+  max-width: 200px;
+  font-size: 0.88rem;
+  padding: 6px 8px;
+}
+
+.maintenance-acct-table td:last-child {
+  white-space: nowrap;
+}
+
+.maintenance-acct-table td:last-child button {
+  margin-right: 6px;
+}
+
+.table-na {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.maintenance-subh {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 1rem 0 0.35rem;
 }
 
 /* site footer */

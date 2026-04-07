@@ -39,4 +39,12 @@ function showNav(user) {
   if (maintenanceLink && user.role !== 'admin') {
     maintenanceLink.classList.add('hidden');
   }
+  const vendorPortalLink = document.getElementById('nav-vendor-portal');
+  if (vendorPortalLink) {
+    vendorPortalLink.classList.toggle('hidden', user.role !== 'vendor');
+  }
+  const userPortalLink = document.getElementById('nav-user-portal');
+  if (userPortalLink) {
+    userPortalLink.classList.toggle('hidden', user.role !== 'user');
+  }
 }

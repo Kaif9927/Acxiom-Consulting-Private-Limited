@@ -5,51 +5,58 @@
     <title>Login — Event Management</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
-  <body>
+  <body class="login-body">
     <header class="site-header">
       <div class="site-header-inner">
         <div class="brand-row">
           <div class="brand">Event Management <span class="brand-sub">System</span></div>
-          <span class="brand-tagline">Enterprise-style operations console</span>
         </div>
         <nav class="top-nav">
-          <a href="/flowchart.html">Application flow</a>
+          <a href="/instruction.html">Instructions</a>
+          <a href="/signup-user.html">User sign up</a>
+          <a href="/flowchart.html">Flow</a>
         </nav>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="login-hero">
-        <h1>Sign in</h1>
-        <p>Memberships, events, and reporting in one place.</p>
-      </div>
-
-      <div class="card" style="max-width: 440px">
-        <div class="field">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            autocomplete="username"
-            placeholder="type: admin (not admin123)"
-          />
+    <div class="wrap login-wrap">
+      <div class="login-stack">
+        <div class="login-hero">
+          <h1>Sign in</h1>
+          <p>Memberships, events, vendor marketplace, cart, and checkout.</p>
         </div>
-        <div class="field">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            autocomplete="current-password"
-            placeholder="type: admin123"
-          />
-        </div>
-        <button type="button" id="btnLogin">Log in</button>
-        <div class="err" id="loginErr"></div>
-      </div>
 
-      <div class="card login-demo-hint" style="max-width: 440px; margin-top: 20px">
+        <div class="card">
+          <div class="field">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              autocomplete="username"
+              placeholder="type: admin (not admin123)"
+            />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="type: admin123"
+            />
+          </div>
+          <button type="button" id="btnLogin">Log in</button>
+          <div class="err" id="loginErr"></div>
+        </div>
+
+        <p class="login-signup-prompt">
+          New user?
+          <a href="/signup-user.html">Create a user account</a>
+        </p>
+
+        <div class="card login-demo-hint">
         <h2 class="login-demo-title">Demo logins</h2>
         <p class="page-lead" style="margin: 0 0 12px">
           First box = <strong>username</strong>. Second box = <strong>password</strong>. They are different strings.
@@ -73,8 +80,14 @@
               <td><code>user</code></td>
               <td><code>user123</code></td>
             </tr>
+            <tr>
+              <td>Vendor</td>
+              <td><code>vendor1</code></td>
+              <td><code>vendor123</code></td>
+            </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
@@ -84,9 +97,6 @@
           <strong>Event Management System</strong>
           <span class="site-footer-dot">·</span>
           <a href="/flowchart.html">Screen flow</a>
-        </p>
-        <p class="site-footer-note">
-          Use a private browser window on shared PCs. Your session ends automatically after a period of inactivity.
         </p>
       </div>
     </footer>

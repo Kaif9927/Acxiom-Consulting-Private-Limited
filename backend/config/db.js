@@ -1,5 +1,7 @@
 const mysql = require('mysql2/promise');
 
+require('./loadEnv').loadEnv();
+
 // env vars override these if set
 const pool = mysql.createPool({
   host: process.env.DB_HOST || '127.0.0.1',
