@@ -1,3 +1,6 @@
+# deployed link
+https://acxiom-consulting-private-limited-1.onrender.com/
+
 # Event Management System
 
 Express + **PostgreSQL** with **session auth**: memberships, events, bookings, and a **marketplace** (**admin**, **vendor**, **user**)—vendors, products, cart, checkout, orders, guest list, maintenance.
