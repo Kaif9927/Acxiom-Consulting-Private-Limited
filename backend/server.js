@@ -75,16 +75,28 @@ const sessionOpts = {
 };
 
 /** Postgres session store: survives Render restarts and works if more than one instance runs (MemoryStore does not). */
-if (process.env.DATABASE_URL) {
+const databaseUrl = (process.env.DATABASE_URL || '').trim();
+const isProdLike =
+  process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+
+if (!databaseUrl) {
+  if (isProdLike) {
+    console.error(
+      '[session] DATABASE_URL is missing. Render runs with NODE_ENV=production; without DATABASE_URL, ' +
+        'sessions use MemoryStore and you will see: "MemoryStore is not designed for a production environment".\n' +
+        'Fix: link this Web Service to your Render PostgreSQL (or set DATABASE_URL in Environment), then redeploy.'
+    );
+    process.exit(1);
+  }
+  console.warn(
+    '[session] DATABASE_URL not set — using MemoryStore (OK for local dev only).'
+  );
+} else {
   const pgSession = require('connect-pg-simple')(session);
   sessionOpts.store = new pgSession({
     pool,
     createTableIfMissing: true
   });
-} else {
-  console.warn(
-    '[session] DATABASE_URL not set — using MemoryStore (unsuitable for production / multiple instances).'
-  );
 }
 
 app.use(session(sessionOpts));
