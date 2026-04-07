@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Application flow — Event Management</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <div class="brand-row">
+          <div class="brand">Event Management <span class="brand-sub">System</span></div>
+          <span class="brand-tagline">Screen flow reference</span>
+        </div>
+        <nav class="top-nav">
+          <a href="/">Login</a>
+          <a href="/dashboard.html">Home / Transactions</a>
+          <a href="/membership.html" id="nav-maintenance">Maintenance</a>
+          <a href="/reports.html">Reports</a>
+          <a href="/flowchart.html"><strong>Flow</strong></a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap flow-wrap">
+      <h1>Screen flow</h1>
+      <p class="page-lead">
+        Same navigation pattern as a typical operations app, with a role split after login.
+      </p>
+
+      <div class="flow-box"><strong>Login</strong>
+        <div class="flow-note">Password field is masked.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-branch">
+        <div class="flow-box">
+          <strong>Admin path</strong>
+          <div class="flow-note">Can access Maintenance, Reports, Transactions</div>
+
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box" style="margin: 0; border-radius: 10px">
+            <strong>Dashboard (Home)</strong> — Transactions
+            <div class="flow-note">Book events, view registrations.</div>
+          </div>
+          <div class="flow-arrow">↓</div>
+
+          <div class="flow-branch" style="margin-top: 0">
+            <div class="flow-box" style="margin: 0; border-radius: 10px">
+              <strong>Reports</strong>
+              <div class="flow-note">Memberships + participation report.</div>
+            </div>
+            <div class="flow-box" style="margin: 0; border-radius: 10px">
+              <strong>Maintenance</strong>
+              <div class="flow-note">Add / update membership.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-box">
+          <strong>User path</strong>
+          <div class="flow-note">Can access Reports, Transactions (no Maintenance)</div>
+
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box" style="margin: 0; border-radius: 10px">
+            <strong>Dashboard (Home)</strong> — Transactions
+            <div class="flow-note">Book events, view registrations.</div>
+          </div>
+          <div class="flow-arrow">↓</div>
+
+          <div class="flow-box" style="margin: 0; border-radius: 10px">
+            <strong>Reports</strong>
+            <div class="flow-note">Memberships + participation report.</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="page-lead" style="margin-top: 28px">
+        Session-protected APIs. Non-admins do not see Maintenance in the menu and will get blocked if they try the URL
+        directly.
+      </p>
+
+      <p><a href="/dashboard.html">← Back to app</a></p>
+
+    </div>
+
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <p class="site-footer-line">
+          <strong>Event Management System</strong>
+          <span class="site-footer-dot">·</span>
+          <a href="/dashboard.html">Back to app</a>
+        </p>
+        <p class="site-footer-note">
+          Flow matches the live menu: Login → Home (transactions) → Reports and Maintenance (admin only).
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script>
+      getSession().then(function (user) {
+        if (user) showNav(user);
+      });
+    </script>
+  </body>
+</html>

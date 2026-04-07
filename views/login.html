@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login — Event Management</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <div class="brand-row">
+          <div class="brand">Event Management <span class="brand-sub">System</span></div>
+          <span class="brand-tagline">Enterprise-style operations console</span>
+        </div>
+        <nav class="top-nav">
+          <a href="/flowchart.html">Application flow</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="login-hero">
+        <h1>Sign in</h1>
+        <p>Memberships, events, and reporting in one place.</p>
+      </div>
+
+      <div class="card" style="max-width: 440px">
+        <div class="field">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            autocomplete="username"
+            placeholder="type: admin (not admin123)"
+          />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            autocomplete="current-password"
+            placeholder="type: admin123"
+          />
+        </div>
+        <button type="button" id="btnLogin">Log in</button>
+        <div class="err" id="loginErr"></div>
+      </div>
+
+      <div class="card login-demo-hint" style="max-width: 440px; margin-top: 20px">
+        <h2 class="login-demo-title">Demo logins</h2>
+        <p class="page-lead" style="margin: 0 0 12px">
+          First box = <strong>username</strong>. Second box = <strong>password</strong>. They are different strings.
+        </p>
+        <table class="login-demo-table">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Username (field 1)</th>
+              <th>Password (field 2)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Admin</td>
+              <td><code>admin</code></td>
+              <td><code>admin123</code></td>
+            </tr>
+            <tr>
+              <td>User</td>
+              <td><code>user</code></td>
+              <td><code>user123</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <p class="site-footer-line">
+          <strong>Event Management System</strong>
+          <span class="site-footer-dot">·</span>
+          <a href="/flowchart.html">Screen flow</a>
+        </p>
+        <p class="site-footer-note">
+          Use a private browser window on shared PCs. Your session ends automatically after a period of inactivity.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const err = document.getElementById("loginErr");
+
+        document.getElementById("btnLogin").onclick = function () {
+          err.textContent = "";
+          var u = document.getElementById("username").value.trim();
+          var p = document.getElementById("password").value;
+          if (!u || !p) {
+            err.textContent = "Fill in both fields.";
+            return;
+          }
+          fetch("/api/login", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: u, password: p }),
+          })
+            .then(function (r) {
+              return r.json().then(function (data) {
+                return { r: r, data: data };
+              });
+            })
+            .then(function (x) {
+              if (!x.r.ok) {
+                err.textContent = x.data.message || "Login failed.";
+                return;
+              }
+              window.location.href = "/dashboard.html";
+            })
+            .catch(function () {
+              err.textContent = "Network problem.";
+            });
+        };
+      })();
+    </script>
+  </body>
+</html>

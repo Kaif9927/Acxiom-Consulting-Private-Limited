@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Maintenance</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <div class="brand-row">
+          <div class="brand">Event Management <span class="brand-sub">System</span></div>
+          <span class="brand-tagline">Maintenance — memberships</span>
+        </div>
+        <nav class="top-nav">
+          <a href="/dashboard.html">Home</a>
+          <a href="/membership.html" id="nav-maintenance">Maintenance</a>
+          <a href="/reports.html">Reports</a>
+          <a href="/flowchart.html">Flow</a>
+          <div class="nav-user">
+            <span class="muted" id="who"></span>
+            <a href="#" id="logout" class="nav-logout">Logout</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <h1>Maintenance</h1>
+      <p class="page-lead">Add or update membership records. Administrators only.</p>
+      <div class="err hidden" id="accessMsg"></div>
+
+      <div class="card hidden" id="adminPanel">
+        <h2>Add membership</h2>
+        <form id="addForm">
+          <div class="field">
+            <label>Member (user account)</label>
+            <select id="memberUser" required name="user_id"></select>
+          </div>
+          <div class="field">
+            <label>Duration</label>
+            <div class="radio-row">
+              <label><input type="radio" name="duration" value="6 months" checked /> 6 months</label>
+              <label><input type="radio" name="duration" value="1 year" /> 1 year</label>
+              <label><input type="radio" name="duration" value="2 years" /> 2 years</label>
+            </div>
+          </div>
+          <div class="field">
+            <label for="start_date">Start date</label>
+            <input type="date" id="start_date" name="start_date" required />
+          </div>
+          <button type="submit">Save</button>
+          <div class="err" id="addErr"></div>
+          <div class="okmsg" id="addOk"></div>
+        </form>
+      </div>
+
+      <div class="card hidden" id="updatePanel">
+        <h2>Update membership</h2>
+        <p>Enter the membership number (id from the report or database).</p>
+        <div class="field">
+          <label for="mid">Membership #</label>
+          <input type="text" id="mid" />
+        </div>
+        <button type="button" id="btnLoad">Load</button>
+        <div id="loadedArea" class="hidden" style="margin-top: 16px">
+          <table id="loadedTable" class="hidden" style="margin-bottom: 12px">
+            <tbody>
+              <tr>
+                <th>Membership #</th>
+                <td id="f_id"></td>
+              </tr>
+              <tr>
+                <th>User</th>
+                <td id="f_user"></td>
+              </tr>
+              <tr>
+                <th>Duration</th>
+                <td id="f_dur"></td>
+              </tr>
+              <tr>
+                <th>Start</th>
+                <td id="f_start"></td>
+              </tr>
+              <tr>
+                <th>End</th>
+                <td id="f_end"></td>
+              </tr>
+              <tr>
+                <th>Status</th>
+                <td id="f_status"></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="field">
+            <label>Action</label>
+            <div class="radio-row">
+              <label><input type="radio" name="action" value="extend" checked /> Extend</label>
+              <label><input type="radio" name="action" value="cancel" /> Cancel membership</label>
+            </div>
+          </div>
+          <div class="field" id="extendOpts">
+            <label>Extend by</label>
+            <div class="radio-row">
+              <label><input type="radio" name="extend_months" value="6" checked /> +6 months</label>
+              <label><input type="radio" name="extend_months" value="12" /> +12 months</label>
+              <label><input type="radio" name="extend_months" value="24" /> +24 months</label>
+            </div>
+          </div>
+          <button type="button" id="btnApply">Apply change</button>
+          <div class="err" id="updErr"></div>
+          <div class="okmsg" id="updOk"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <p class="site-footer-line">
+          <strong>Event Management System</strong>
+          <span class="site-footer-dot">·</span>
+          <a href="/flowchart.html">Screen flow</a>
+        </p>
+        <p class="site-footer-note">
+          Log out when you are done on a shared computer. Idle sessions expire after about 30 minutes.
+        </p>
+      </div>
+    </footer>
+
+    <script src="/js/common.js"></script>
+    <script>
+      let loadedMembership = null;
+
+      function selectedRadio(name) {
+        const el = document.querySelector('input[name="' + name + '"]:checked');
+        return el ? el.value : null;
+      }
+
+      redirectIfGuest().then(function (user) {
+        if (!user) return;
+        document.getElementById('who').textContent =
+          user.username + ' (' + user.role + ')';
+        showNav(user);
+
+        document.getElementById('logout').onclick = function (e) {
+          e.preventDefault();
+          fetch('/api/logout', { method: 'POST', credentials: 'include' }).finally(function () {
+            window.location.href = '/';
+          });
+        };
+
+        if (user.role !== 'admin') {
+          document.getElementById('accessMsg').textContent =
+            'You do not have access to maintenance. Ask an admin.';
+          document.getElementById('accessMsg').classList.remove('hidden');
+          return;
+        }
+
+        document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('updatePanel').classList.remove('hidden');
+
+        fetch('/api/users-for-membership', { credentials: 'include' })
+          .then((r) => r.json())
+          .then((d) => {
+            const sel = document.getElementById('memberUser');
+            sel.innerHTML = '<option value="">— pick one —</option>';
+            if (d.users) {
+              d.users.forEach((u) => {
+                const o = document.createElement('option');
+                o.value = u.id;
+                o.textContent = u.username;
+                sel.appendChild(o);
+              });
+            }
+          });
+
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById('start_date').value = today;
+
+        document.querySelectorAll('input[name="action"]').forEach((r) => {
+          r.onchange = function () {
+            const ext = document.getElementById('extendOpts');
+            if (selectedRadio('action') === 'cancel') {
+              ext.classList.add('hidden');
+            } else {
+              ext.classList.remove('hidden');
+            }
+          };
+        });
+
+        document.getElementById('addForm').onsubmit = function (e) {
+          e.preventDefault();
+          document.getElementById('addErr').textContent = '';
+          document.getElementById('addOk').textContent = '';
+          const uid = document.getElementById('memberUser').value;
+          const duration = selectedRadio('duration');
+          const start = document.getElementById('start_date').value;
+          if (!uid) {
+            document.getElementById('addErr').textContent = 'User is required.';
+            return;
+          }
+          if (!start) {
+            document.getElementById('addErr').textContent = 'Start date required.';
+            return;
+          }
+          apiJson('/api/memberships', {
+            method: 'POST',
+            body: JSON.stringify({
+              user_id: parseInt(uid, 10),
+              duration: duration,
+              start_date: start
+            })
+          }).then(({ res, data }) => {
+            if (!data) return;
+            if (!res.ok) {
+              document.getElementById('addErr').textContent = data.message || 'Error';
+              return;
+            }
+            document.getElementById('addOk').textContent = data.message || 'Saved';
+          });
+        };
+
+        document.getElementById('btnLoad').onclick = function () {
+          document.getElementById('updErr').textContent = '';
+          document.getElementById('updOk').textContent = '';
+          const id = document.getElementById('mid').value.trim();
+          if (!id) {
+            document.getElementById('updErr').textContent = 'Membership number required.';
+            return;
+          }
+          fetch('/api/memberships/' + encodeURIComponent(id), { credentials: 'include' })
+            .then((r) => r.json())
+            .then((d) => {
+              if (!d.ok) {
+                document.getElementById('updErr').textContent = d.message || 'Not found';
+                document.getElementById('loadedArea').classList.add('hidden');
+                document.getElementById('loadedTable').classList.add('hidden');
+                loadedMembership = null;
+                return;
+              }
+              loadedMembership = d.membership;
+              var m = d.membership;
+              document.getElementById('f_id').textContent = m.id;
+              document.getElementById('f_user').textContent = m.username;
+              document.getElementById('f_dur').textContent = m.duration;
+              document.getElementById('f_start').textContent = m.start_date;
+              document.getElementById('f_end').textContent = m.end_date;
+              document.getElementById('f_status').textContent = m.status;
+              document.getElementById('loadedTable').classList.remove('hidden');
+              document.getElementById('loadedArea').classList.remove('hidden');
+            });
+        };
+
+        document.getElementById('btnApply').onclick = function () {
+          document.getElementById('updErr').textContent = '';
+          document.getElementById('updOk').textContent = '';
+          if (!loadedMembership) {
+            document.getElementById('updErr').textContent = 'Load a membership first.';
+            return;
+          }
+          const action = selectedRadio('action');
+          const months =
+            action === 'extend' ? parseInt(selectedRadio('extend_months'), 10) || 6 : 6;
+          apiJson('/api/memberships/update', {
+            method: 'POST',
+            body: JSON.stringify({
+              membership_id: loadedMembership.id,
+              action: action,
+              extend_months: months
+            })
+          }).then(({ res, data }) => {
+            if (!data) return;
+            if (!res.ok) {
+              document.getElementById('updErr').textContent = data.message || 'Failed';
+              return;
+            }
+            document.getElementById('updOk').textContent = data.message;
+            loadedMembership = null;
+            document.getElementById('loadedArea').classList.add('hidden');
+          });
+        };
+      });
+    </script>
+  </body>
+</html>
